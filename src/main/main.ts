@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 
 /**
@@ -14,6 +15,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { ThreadPool } from './scanner/threadPool';
 
 class AppUpdater {
   constructor() {
@@ -29,6 +31,16 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.handle('scanner:start', async () => {
+  if (!mainWindow) return;
+
+  const pool = new ThreadPool(4, mainWindow);
+
+  pool.addTask('C:\\');
+
+  return true;
 });
 
 if (process.env.NODE_ENV === 'production') {

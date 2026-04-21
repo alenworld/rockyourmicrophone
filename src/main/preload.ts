@@ -24,6 +24,13 @@ const electronHandler = {
   },
 };
 
+contextBridge.exposeInMainWorld('scanner', {
+  start: () => ipcRenderer.invoke('scanner:start'),
+
+  onFile: (cb: (file: string) => void) =>
+    ipcRenderer.on('scanner:file', (_, file) => cb(file)),
+});
+
 contextBridge.exposeInMainWorld('electron', electronHandler);
 
 export type ElectronHandler = typeof electronHandler;
